@@ -1,0 +1,4 @@
+usbmount (https://wiki.debian.org/usbmount)
+
+Prebuilt from Rockchip buildroot 2024 SDK(rockchip_rk3588_defconfig):
+2933b772303 usbmount: Handle non-removable USB devices
