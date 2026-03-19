@@ -1,0 +1,6 @@
+rockdev
+common
+output/
+u-boot/bl31_*.bin.digest
+u-boot/bl31_*.bin.lzma
+
