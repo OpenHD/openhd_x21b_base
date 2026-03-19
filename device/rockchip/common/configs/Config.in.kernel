@@ -59,6 +59,10 @@ config RK_KERNEL_IMG
 		if RK_KERNEL_ARM64 && RK_BOOT_COMPRESSED
 	default "kernel/arch/$RK_KERNEL_ARCH/boot/Image"
 
+config RK_KERNEL_DTB
+	string
+	default "kernel/$RK_KERNEL_DTS_NAME.dtb"
+
 if RK_RECOVERY
 
 menu "Overloaded configs for Recovery"
@@ -71,10 +75,6 @@ config RK_KERNEL_RECOVERY_CFG_FRAGMENTS
 
 config RK_KERNEL_RECOVERY_DTS_NAME
 	string "device-tree script name"
-
-config RK_KERNEL_DTB
-	string
-	default "kernel/$RK_KERNEL_DTS_NAME.dtb"
 
 config RK_KERNEL_RECOVERY_LOGO
 	string "loader logo name"
