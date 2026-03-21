@@ -1,4 +1,0 @@
-#!/bin/sh
-
-LINUX_VERSION=$(cut -d' ' -f3 /proc/version)
-perf-${LINUX_VERSION%.*} $@
