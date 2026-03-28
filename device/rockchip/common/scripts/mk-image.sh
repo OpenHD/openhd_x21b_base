@@ -249,6 +249,16 @@ case $FS_TYPE in
 esac
 
 case $FS_TYPE in
+    empty)
+        [ $SIZE_KB -ne 0 ] || fatal "$FS_TYPE: size must be specified."
+
+        SIZE_BYTES=$(( SIZE_KB * 1024 ))
+
+        echo "Creating empty (0xFF) image: $TARGET size=${SIZE_KB}KB"
+
+        dd if=/dev/zero bs=$SIZE_BYTES count=1 2>/dev/null | \
+            tr '\000' '\377' > $TARGET || exit 1
+        ;;
     ext[234]|msdos|fat|vfat|ntfs|btrfs|f2fs|ubi|ubifs)
         if [ $SIZE_KB -eq 0 ]; then
             mkimage_auto_sized || exit 1

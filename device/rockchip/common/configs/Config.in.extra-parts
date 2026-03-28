@@ -63,6 +63,7 @@ config RK_EXTRA_PARTITION_1_FSTYPE
 	default "erofs" if RK_EXTRA_PARTITION_1_EROFS
 	default "squashfs" if RK_EXTRA_PARTITION_1_SQUASHFS
 	default "jffs2" if RK_EXTRA_PARTITION_1_JFFS2
+	default "empty" if RK_EXTRA_PARTITION_1_EMPTY
 
 choice
 	prompt "filesystem type"
@@ -97,6 +98,9 @@ config RK_EXTRA_PARTITION_1_SQUASHFS
 
 config RK_EXTRA_PARTITION_1_JFFS2
 	bool "jffs2"
+
+config RK_EXTRA_PARTITION_1_EMPTY
+	bool "empty"
 
 endchoice # fstype
 
