@@ -1,6 +1,7 @@
 rockdev
 common
 output/
+x21b-swu/swu/
 u-boot/bl31_*.bin.digest
 u-boot/bl31_*.bin.lzma
 

@@ -1,0 +1,61 @@
+software =
+{
+    version = "1.0.0";
+    description = "A/B update for uboot boot rootfs";
+
+    stable = {
+        slot-a: {
+            images: (
+                {
+                    filename = "uboot.img";
+                    device = "mtd0";    /* uboot_a */
+                    type = "flash";
+                },
+                {
+                    filename = "boot.img";
+                    device = "mtd3";    /* boot_a */
+                    type = "flash";
+                },
+                {
+                    filename = "rootfs.img";
+                    device = "mtd7";    /* rootfs_a */
+                    type = "flash";
+                }
+            );
+
+            bootenv: (
+                {
+                    name = "boot_slot";
+                    value = "A";
+                }
+            );
+        };
+
+        slot-b: {
+            images: (
+                {
+                    filename = "uboot.img";
+                    device = "mtd1";    /* uboot_b */
+                    type = "flash";
+                },
+                {
+                    filename = "boot.img";
+                    device = "mtd4";    /* boot_b */
+                    type = "flash";
+                },
+                {
+                    filename = "rootfs.img";
+                    device = "mtd8";    /* rootfs_b */
+                    type = "flash";
+                }
+            );
+
+            bootenv: (
+                {
+                    name = "boot_slot";
+                    value = "B";
+                }
+            );
+        };
+    };
+}
