@@ -1,3 +1,0 @@
-[submodule "external/ohd-wifi-kernel/rtl88x2eu"]
-	path = external/ohd-wifi-kernel/rtl88x2eu
-	url = https://github.com/OpenHD/rtl88x2eu
