@@ -16,6 +16,15 @@ for idx in $(seq 1 "$(rk_extra_part_num)"); do
 	mkdir -p "$TARGET_DIR/$MOUNTPOINT" "$(dirname "$MOUNT_DIR")"
 	ln -rsf "$TARGET_DIR/$MOUNTPOINT" "$MOUNT_DIR"
 
+	if [ "$MOUNTPOINT" = "/ohd" ] || [ "$MOUNTPOINT" = "ohd" ]; then
+		OHD_STORE_DIR="$TARGET_DIR/../../../../output/ohd-bundle"
+		if [ -d "$OHD_STORE_DIR" ]; then
+			message "Restoring OHD bundle from $OHD_STORE_DIR to $OUTDIR"
+			mkdir -p "$OUTDIR"
+			rsync -a "$OHD_STORE_DIR"/ "$OUTDIR"/
+		fi
+	fi
+
 	if rk_extra_part_builtin $idx; then
 		rk_extra_part_prepare $idx
 		message "Merging $OUTDIR into $TARGET_DIR/$MOUNTPOINT (built-in)"

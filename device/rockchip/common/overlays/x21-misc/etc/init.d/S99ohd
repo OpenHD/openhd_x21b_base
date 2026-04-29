@@ -1,0 +1,41 @@
+#!/bin/sh
+start_openhd() {
+    echo "Loading ohd init script"
+
+    /ohd/start-ohd.sh
+}
+
+stop_openhd() {
+    :
+}
+
+restart_openhd() {
+    stop_openhd
+    start_openhd
+}
+
+status_openhd() {
+    #TBD
+    exit 0
+}
+
+case "$1" in
+    start)
+        start_openhd
+        ;;
+    stop)
+        stop_openhd
+        ;;
+    restart)
+        restart_openhd
+        ;;
+    status)
+        status_openhd
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|restart|status}"
+        exit 1
+        ;;
+esac
+
+exit 0

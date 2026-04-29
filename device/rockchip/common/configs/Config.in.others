@@ -3,7 +3,7 @@
 menu "Others configurations"
 
 config RK_UBI
-	bool
+	bool "Enable UBI support"
 
 config RK_OVERLAY
 	bool "overlays for rootfs, recovery, etc."
