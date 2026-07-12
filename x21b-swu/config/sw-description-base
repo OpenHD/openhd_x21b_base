@@ -22,13 +22,6 @@ software =
                     type = "flash";
                 }
             );
-
-            bootenv: (
-                {
-                    name = "boot_slot";
-                    value = "A";
-                }
-            );
         };
 
         slot-b: {
@@ -47,13 +40,6 @@ software =
                     filename = "rootfs.img";
                     device = "mtd8";    /* rootfs_b */
                     type = "flash";
-                }
-            );
-
-            bootenv: (
-                {
-                    name = "boot_slot";
-                    value = "B";
                 }
             );
         };

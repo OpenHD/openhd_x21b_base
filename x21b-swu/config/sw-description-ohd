@@ -1,0 +1,14 @@
+software =
+{
+    version = "1.0.0";
+    description = "A/B update for uboot boot rootfs";
+
+    images: (
+        {
+            filename = "ohd.img";
+            device = "mtd9";
+            type = "flash";
+            handler = "ubiformat";
+        }
+    );
+}
