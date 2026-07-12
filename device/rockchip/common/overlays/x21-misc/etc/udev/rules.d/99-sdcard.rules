@@ -1,0 +1,1 @@
+ACTION=="add", KERNEL=="mmcblk1p1", SUBSYSTEM=="block", RUN+="/usr/bin/update-from-sd.sh"
