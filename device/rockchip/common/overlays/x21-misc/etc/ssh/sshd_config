@@ -1,0 +1,14 @@
+HostKey /etc/ssh/ssh_host_ed25519_key
+
+PermitRootLogin yes
+
+PasswordAuthentication yes
+KbdInteractiveAuthentication no
+ChallengeResponseAuthentication no
+
+PubkeyAuthentication yes
+AuthorizedKeysFile .ssh/authorized_keys
+
+PermitEmptyPasswords yes
+
+Subsystem sftp /usr/lib/ssh/sftp-server
