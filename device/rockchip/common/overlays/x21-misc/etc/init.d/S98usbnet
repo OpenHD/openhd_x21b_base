@@ -1,0 +1,46 @@
+#!/bin/sh
+
+DAEMON=/usr/sbin/udhcpd
+CONF=/etc/udhcpd.conf
+IFACE=usb0
+IP=192.168.7.2/24
+
+case "$1" in
+  start)
+    echo "Starting USB gadget network"
+
+    # Wait briefly for usb0 to appear
+    for i in 1 2 3 4 5; do
+      [ -d /sys/class/net/$IFACE ] && break
+      sleep 1
+    done
+
+    ip link set "$IFACE" up
+    ip addr flush dev "$IFACE"
+    ip addr add "$IP" dev "$IFACE"
+
+    echo "Starting DHCP server on $IFACE"
+    mkdir -p /var/lib/misc
+    touch /var/lib/misc/udhcpd.leases
+    $DAEMON "$CONF"
+    ;;
+
+  stop)
+    echo "Stopping DHCP server"
+    killall udhcpd 2>/dev/null
+
+    ip addr flush dev "$IFACE" 2>/dev/null
+    ip link set "$IFACE" down 2>/dev/null
+    ;;
+
+  restart)
+    "$0" stop
+    sleep 1
+    "$0" start
+    ;;
+
+  *)
+    echo "Usage: $0 {start|stop|restart}"
+    exit 1
+    ;;
+esac
