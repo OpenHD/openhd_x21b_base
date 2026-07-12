@@ -1,7 +1,8 @@
 #!/bin/sh
 start_openhd() {
     echo "Loading ohd init script"
-
+    # 1st run OTA script, as SD wount trigger udev if it was inserted at boot
+    /usr/bin/update-from-sd.sh
     /ohd/start-ohd.sh
 }
 
