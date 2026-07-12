@@ -26,3 +26,10 @@ if [ "$RK_ROOTFS_CONSOLE_LOGIN" ]; then
 		fi
 	fi
 fi
+
+message "Fixing SSH permissions..."
+chown -ch root:root etc/ssh/ssh_host_*_key* 2>/dev/null || true
+chmod 600 etc/ssh/ssh_host_*_key 2>/dev/null || true
+chmod 644 etc/ssh/ssh_host_*_key.pub 2>/dev/null || true
+
+chmod 644 etc/ssh/sshd_config 2>/dev/null || true
