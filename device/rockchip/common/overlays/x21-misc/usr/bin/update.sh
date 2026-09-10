@@ -9,6 +9,10 @@ if [ -z "$file" ]; then
 fi
 
 case "$file" in
+    *.ohd_bundle)
+        echo "Installing OpenHD application bundle: $file"
+        exec /usr/bin/update-ohd-bundle.sh "$file"
+        ;;
     *.ohd_base)
         switch_slot=1
         ;;
@@ -17,7 +21,7 @@ case "$file" in
         ;;
     *)
         echo "Unsupported update file extension: $file"
-        echo "Expected .ohd_base or .ohd"
+        echo "Expected .ohd_bundle, .ohd_base or .ohd"
         exit 1
         ;;
 esac
