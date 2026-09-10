@@ -15,9 +15,6 @@ export LD_LIBRARY_PATH=/ohd/usr/lib:$LD_LIBRARY_PATH
 mount --bind /ohd/ohd-rw /usr/local/share/openhd
 mount --bind /ohd/ohd-config /Config
 
-# Load drivers
-insmod /ohd/drivers/88x2eu_ohd.ko
-
 # Start sysuitls
 nohup /ohd/usr/bin/openhd_sys_utils >> "$OHD_SYSUTILS_LOG_FILE" 2>&1 &
 echo $! > "$OHD_SYSUTILS_PID_FILE"
