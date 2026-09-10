@@ -27,7 +27,7 @@ mount /dev/mmcblk1p1 "$mnt"
 
 file=""
 
-for candidate in "$mnt"/*.ohd_bundle "$mnt"/*.ohd_base "$mnt"/*.ohd; do
+for candidate in "$mnt"/*.ohd_base "$mnt"/*.ohd; do
     if [ -e "$candidate" ]; then
         file="$candidate"
         break
@@ -50,11 +50,7 @@ if [ -n "$file" ]; then
     else
         ohdledctl /dev/ttyS3 breathe 0 0 255 1200 255 0 0 1200
     fi
-    if [ "$rc" -eq 0 ]; then
-        rm -f "$file"
-    else
-        mv "$file" "$file.failed"
-    fi
+    rm -f "$file"
     sleep 5
 
     cleanup
