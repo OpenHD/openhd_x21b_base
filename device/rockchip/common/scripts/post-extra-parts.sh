@@ -23,6 +23,7 @@ for idx in $(seq 1 "$(rk_extra_part_num)"); do
 			mkdir -p "$OUTDIR"
 			rsync -a "$OHD_STORE_DIR"/ "$OUTDIR"/
 		fi
+		mkdir -p "$OUTDIR/ohd-rw" "$OUTDIR/ohd-config"
 	fi
 
 	if rk_extra_part_builtin $idx; then

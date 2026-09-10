@@ -24,12 +24,20 @@ make_package() {
     local package_files=(sw-description)
 
     for img in "${images[@]}"; do
-        if [ "$img" = "ohd.img" ]; then
-            cp "$CONFIG/prepare-ohd.sh" "$work/prepare-ohd.sh"
-            chmod 0755 "$work/prepare-ohd.sh"
-            package_files+=(prepare-ohd.sh)
-        fi
         cp "$ROCKDEV/$img" "$work/$img"
+        if [ "$img" = "ohd.img" ]; then
+            # SWUpdate 2023.12 erases only the input image length on NAND.
+            # Extend the compact UBI image with erased pages to cover all of
+            # the 100 MiB OHD partition and remove stale image-sequence headers.
+            ohd_partition_size=$((0x6400000))
+            ohd_image_size="$(stat -c '%s' "$work/$img")"
+            if ((ohd_image_size > ohd_partition_size)); then
+                echo "OHD image is larger than mtd9" >&2
+                exit 1
+            fi
+            head -c "$((ohd_partition_size - ohd_image_size))" /dev/zero \
+                | tr '\000' '\377' >> "$work/$img"
+        fi
         package_files+=("$img")
     done
 
