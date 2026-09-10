@@ -27,6 +27,17 @@ esac
 # is still attached: the UBI background thread can rewrite erase-counter
 # headers during the flash, leaving mixed image sequence numbers behind.
 prepare_ohd_partition_for_update() {
+    # update-from-sd normally stops OpenHD first, but update.sh is also a
+    # public entry point and must be safe when invoked directly.
+    for pidfile in /var/run/openhd.pid /var/run/openhd-sys-utils.pid; do
+        if [ -r "$pidfile" ]; then
+            pid="$(cat "$pidfile")"
+            if [ -n "$pid" ]; then
+                kill "$pid" 2>/dev/null || true
+            fi
+        fi
+    done
+
     sync
 
     # These bind mounts may be active when an SD card is inserted after boot.
@@ -36,9 +47,22 @@ prepare_ohd_partition_for_update() {
         fi
     done
 
-    if grep -qs " /ohd " /proc/mounts; then
-        umount /ohd
-    fi
+    # UBIFS can remain transiently busy while stopped processes and its
+    # background worker release their final references. Retry rather than
+    # proceeding with an attached UBI device or requiring a second attempt.
+    attempt=0
+    while grep -qs " /ohd " /proc/mounts; do
+        if umount /ohd; then
+            break
+        fi
+        attempt=$((attempt + 1))
+        if [ "$attempt" -ge 10 ]; then
+            echo "Unable to unmount /ohd; refusing to flash mtd9" >&2
+            return 1
+        fi
+        sync
+        sleep 1
+    done
 
     if [ -d /sys/class/ubi/ubi9 ]; then
         ubidetach /dev/ubi_ctrl -m 9
