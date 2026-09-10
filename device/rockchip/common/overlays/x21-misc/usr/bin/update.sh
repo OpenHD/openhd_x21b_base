@@ -22,6 +22,31 @@ case "$file" in
         ;;
 esac
 
+# The OHD UBI volume is mounted by S00mountall before S99ohd checks the SD
+# card for updates. Never let SWUpdate's raw NAND handler erase mtd9 while UBI
+# is still attached: the UBI background thread can rewrite erase-counter
+# headers during the flash, leaving mixed image sequence numbers behind.
+prepare_ohd_partition_for_update() {
+    sync
+
+    # These bind mounts may be active when an SD card is inserted after boot.
+    for mountpoint in /usr/local/share/openhd /Config; do
+        if grep -qs " $mountpoint " /proc/mounts; then
+            umount "$mountpoint"
+        fi
+    done
+
+    if grep -qs " /ohd " /proc/mounts; then
+        umount /ohd
+    fi
+
+    if [ -d /sys/class/ubi/ubi9 ]; then
+        ubidetach /dev/ubi_ctrl -m 9
+    fi
+}
+
+prepare_ohd_partition_for_update
+
 if [ "$switch_slot" = "0" ]; then
     echo "Running slotless update: $file"
     swupdate -i "$file"
