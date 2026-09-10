@@ -21,14 +21,21 @@ make_package() {
     mkdir -p "$work"
 
     cp "$CONFIG/$desc" "$work/sw-description"
+    local package_files=(sw-description)
 
     for img in "${images[@]}"; do
+        if [ "$img" = "ohd.img" ]; then
+            cp "$CONFIG/prepare-ohd.sh" "$work/prepare-ohd.sh"
+            chmod 0755 "$work/prepare-ohd.sh"
+            package_files+=(prepare-ohd.sh)
+        fi
         cp "$ROCKDEV/$img" "$work/$img"
+        package_files+=("$img")
     done
 
     (
         cd "$work"
-        printf '%s\n' sw-description "${images[@]}" | cpio -ov -H crc -L > "../$output"
+        printf '%s\n' "${package_files[@]}" | cpio -ov -H crc -L > "../$output"
     )
 
     rm -rf "$work"
