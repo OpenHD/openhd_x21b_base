@@ -1,0 +1,59 @@
+#!/bin/sh
+# Configure the sensor and ISP while the camera capture/encoder is stopped.
+set -eu
+hdr=0; left=0
+
+case "${1:-}" in
+    1080p) width=1920; sensor_height=1080; height=1080; top=0; vmax=1150 ;;
+    720p) width=1280; sensor_height=752; height=720; top=16; vmax=822 ;;
+    full90) width=1920; sensor_width=1936; sensor_height=1100; height=1080; left=8; top=8; vmax=1250 ;;
+    hdr45) width=1920; sensor_width=1936; sensor_height=1100; height=1080; left=8; top=8; vmax=2500; hdr=1 ;;
+    *) echo "Usage: x21-imx662-mode 1080p|720p|full90|hdr45 [max|FPS] [raw10|raw12]" >&2; exit 2 ;;
+esac
+sensor_width=${sensor_width:-$width}
+rate=${2:-max}
+case "${3:-raw10}" in
+    raw10) code=SRGGB10_1X10; hmax=660 ;;
+    raw12) code=SRGGB12_1X12; hmax=990 ;;
+    *) echo "Bit depth must be raw10 or raw12" >&2; exit 2 ;;
+esac
+[ "$hdr" = 0 ] || [ "${3:-raw10}" = raw10 ] || {
+    echo "HDR DOL2 requires raw10" >&2; exit 2
+}
+case "$rate" in
+    max) interval="$((hmax * vmax))/74250000" ;;
+    *[!0-9]*|'') echo "Frame rate must be max or a positive integer" >&2; exit 2 ;;
+    *) [ "$rate" -gt 0 ] || exit 2; interval="1/$rate" ;;
+esac
+
+sensor_media=; sensor=; isp_media=
+# Optional space-separated media devices for machines with several camera graphs.
+for media in ${IMX662_MEDIA_DEVICES:-/dev/media*}; do
+    [ -e "$media" ] || continue
+    graph=$(media-ctl -d "$media" -p)
+    name=$(printf '%s\n' "$graph" | sed -n 's/.*entity [0-9][0-9]*: \(m[0-9][0-9]_[bf]_imx662[^()]*\) (.*/\1/p' | sed 's/ *$//')
+    if [ -n "$name" ]; then sensor_media=$media; sensor=$name; fi
+    case "$graph" in
+        *rkisp-isp-subdev*)
+            case "$graph" in *rkisp_mainpath*) isp_media=$media ;; esac
+            ;;
+    esac
+done
+[ -n "$sensor_media" ] && [ -n "$isp_media" ] || {
+    echo "IMX662 sensor and rkisp mainpath media graphs must be present" >&2
+    exit 1
+}
+
+sensor_device=$(media-ctl -d "$sensor_media" -e "$sensor")
+v4l2-ctl -d "$sensor_device" --set-ctrl="hdr_sensor_mode=$hdr"
+media-ctl -d "$sensor_media" --set-v4l2 "'$sensor':0[fmt:$code/${sensor_width}x${sensor_height}@$interval]"
+media-ctl -d "$isp_media" --set-v4l2 "'rkisp-isp-subdev':0[fmt:$code/${sensor_width}x${sensor_height} crop:($left,$top)/${width}x${height}]"
+media-ctl -d "$isp_media" --set-v4l2 "'rkisp-isp-subdev':2[fmt:YUYV8_2X8/${width}x${height} crop:(0,0)/${width}x${height}]"
+video=$(media-ctl -d "$isp_media" -e rkisp_mainpath)
+v4l2-ctl -d "$video" --set-fmt-video="width=$width,height=$height,pixelformat=NV12"
+media-ctl -d "$sensor_media" --get-v4l2 "'$sensor':0"
+v4l2-ctl -d "$video" --get-fmt-video
+printf 'Configured %sx%s NV12 on %s; verify sustained capture/encoding FPS on the board.\n' "$width" "$height" "$video"
+if [ "$hdr" = 1 ]; then
+    echo 'DOL2 sends long/short exposures on VC0/VC1. Start RKAIQ and capture in HDR2 mode; sensor control alone does not enable ISP merging.'
+fi

@@ -1,0 +1,18 @@
+{
+	"NORMAL": {
+		"source": "RV1126B/iqfiles/S30Plus/NORMAL/imx662_CMK-OT1234-FV0_M00-2MP-F00.json",
+		"sha256": "cd00bac1516c19c3c6a210e2ea282cb57fc8b4442a29ebdb973e6b25303e4cfd"
+	},
+	"MOON": {
+		"source": "RV1126B/iqfiles/S30Plus/MOON/imx662_CMK-OT1234-FV0_M00-2MP-F00.json",
+		"sha256": "f92beb3da44c635e8d96c095dee5d1b57e43bf0577fd06e0415780a107e8f910"
+	},
+	"PLANET": {
+		"source": "RV1126B/iqfiles/S30Plus/PLANET/imx662_CMK-OT1234-FV0_M00-2MP-F00.json",
+		"sha256": "f92beb3da44c635e8d96c095dee5d1b57e43bf0577fd06e0415780a107e8f910"
+	},
+	"SUN": {
+		"source": "RV1126B/iqfiles/S30Plus/SUN/imx662_CMK-OT1234-FV0_M00-2MP-F00.json",
+		"sha256": "ec511efe7efe8fe478cef127753f2336512bad49455c7e2af35e2caaa2a020bc"
+	}
+}
